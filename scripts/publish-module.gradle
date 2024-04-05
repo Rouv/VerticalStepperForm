@@ -68,10 +68,17 @@ afterEvaluate {
     }
 }
 
-ext["signing.keyId"] = rootProject.ext["signing.keyId"]
-ext["signing.password"] = rootProject.ext["signing.password"]
-ext["signing.secretKeyRingFile"] = rootProject.ext["signing.secretKeyRingFile"]
+if (rootProject.hasProperty('signing.keyId') && rootProject.ext["signing.keyId"] != ""
+        && rootProject.hasProperty('signing.password') && rootProject.ext["signing.v"] != ""
+        && rootProject.hasProperty('signing.secretKeyRingFile') && rootProject.ext["signing.secretKeyRingFile"] != "") {
 
-signing {
-    sign publishing.publications
+    ext["signing.keyId"] = rootProject.ext["signing.keyId"]
+    ext["signing.password"] = rootProject.ext["signing.password"]
+    ext["signing.secretKeyRingFile"] = rootProject.ext["signing.secretKeyRingFile"]
+
+    signing {
+        sign publishing.publications
+    }
+} else {
+    getLogger().log(LogLevel.WARN, "Warning: Skipping signing due to missing or incomplete signing information in gradle properties (signing.keyId, signing.password, signing.secretKeyRingFile)")
 }
