@@ -3,10 +3,6 @@ package ernestoyaquello.com.verticalstepperform;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
-
-import androidx.annotation.LayoutRes;
-import androidx.appcompat.widget.AppCompatImageButton;
-
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -17,16 +13,16 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import androidx.annotation.LayoutRes;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import ernestoyaquello.com.verticalstepperform.listener.StepperFormListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-
-import ernestoyaquello.com.verticalstepperform.listener.StepperFormListener;
 
 /**
  * Custom layout that implements a vertical stepper form.
@@ -72,7 +68,7 @@ public class VerticalStepperFormView extends LinearLayout {
      * Gets an instance of the builder that will be used to set up and initialize the form.
      *
      * @param stepperFormListener The listener for the stepper form events.
-     * @param steps An array with the steps that will be displayed in the form.
+     * @param steps               An array with the steps that will be displayed in the form.
      * @return An instance of the stepper form builder. Use it to configure and initialize the form.
      */
     public Builder setup(StepperFormListener stepperFormListener, Step<?>... steps) {
@@ -83,7 +79,7 @@ public class VerticalStepperFormView extends LinearLayout {
      * Gets an instance of the builder that will be used to set up and initialize the form.
      *
      * @param stepperFormListener The listener for the stepper form events.
-     * @param steps A list with the steps that will be displayed in the form.
+     * @param steps               A list with the steps that will be displayed in the form.
      * @return An instance of the stepper form builder. Use it to configure and initialize the form.
      */
     public Builder setup(StepperFormListener stepperFormListener, List<Step<?>> steps) {
@@ -103,10 +99,10 @@ public class VerticalStepperFormView extends LinearLayout {
     }
 
     /**
-     * Marks the specified step as completed or uncompleted depending on whether the step data is 
+     * Marks the specified step as completed or uncompleted depending on whether the step data is
      * valid or not.
      *
-     * @param stepPosition The step position.
+     * @param stepPosition  The step position.
      * @param useAnimations True to animate the changes in the views, false to not.
      * @return True if the step was found and marked as completed; false otherwise.
      */
@@ -131,7 +127,7 @@ public class VerticalStepperFormView extends LinearLayout {
     /**
      * Marks the specified step as completed.
      *
-     * @param stepPosition The step position.
+     * @param stepPosition  The step position.
      * @param useAnimations True to animate the changes in the views, false to not.
      */
     public void markStepAsCompleted(int stepPosition, boolean useAnimations) {
@@ -144,7 +140,7 @@ public class VerticalStepperFormView extends LinearLayout {
     /**
      * Marks the currently open step as uncompleted.
      *
-     * @param errorMessage The error message.
+     * @param errorMessage  The error message.
      * @param useAnimations True to animate the changes in the views, false to not.
      */
     public synchronized void markOpenStepAsUncompleted(boolean useAnimations, String errorMessage) {
@@ -154,8 +150,8 @@ public class VerticalStepperFormView extends LinearLayout {
     /**
      * Marks the specified step as uncompleted.
      *
-     * @param stepPosition The step position.
-     * @param errorMessage The error message.
+     * @param stepPosition  The step position.
+     * @param errorMessage  The error message.
      * @param useAnimations True to animate the changes in the views, false to not.
      */
     public void markStepAsUncompleted(int stepPosition, String errorMessage, boolean useAnimations) {
@@ -274,8 +270,8 @@ public class VerticalStepperFormView extends LinearLayout {
      * In case the navigation is possible and the specified position to go to is the last one + 1,
      * the form will attempt to complete.
      *
-     * @param stepPosition The step position to go to. If it is the next one to the actual last one,
-     *                     the form will attempt to complete.
+     * @param stepPosition  The step position to go to. If it is the next one to the actual last one,
+     *                      the form will attempt to complete.
      * @param useAnimations Indicates whether or not the affected steps will be opened/closed using
      *                      animations.
      * @return True if the navigation to the step was performed; false otherwise.
@@ -367,12 +363,25 @@ public class VerticalStepperFormView extends LinearLayout {
                 View stepContentLayout = stepInstance.getContentLayout();
                 Rect scrollBounds = new Rect();
                 stepsScrollView.getDrawingRect(scrollBounds);
-                if (stepContentLayout == null || scrollBounds.top > stepContentLayout.getY()) {
-                    if (smoothScroll) {
-                        stepsScrollView.smoothScrollTo(0, stepEntireLayout.getTop());
-                    } else {
-                        stepsScrollView.scrollTo(0, stepEntireLayout.getTop());
-                    }
+                if (stepContentLayout == null
+                        || scrollBounds.top > stepEntireLayout.getTop()
+                        || scrollBounds.bottom < stepEntireLayout.getBottom()
+                ) {
+                    stepsScrollView.postDelayed(() -> {
+                        if (smoothScroll) {
+                            stepsScrollView.smoothScrollTo(0, stepEntireLayout.getTop());
+                        } else {
+                            stepsScrollView.scrollTo(0, stepEntireLayout.getTop());
+                        }
+                    }, 50);
+
+                    stepsScrollView.postDelayed(() -> {
+                        if (smoothScroll) {
+                            stepsScrollView.smoothScrollTo(0, stepEntireLayout.getTop());
+                        } else {
+                            stepsScrollView.scrollTo(0, stepEntireLayout.getTop());
+                        }
+                    }, 150);
                 }
             });
         }
@@ -462,7 +471,7 @@ public class VerticalStepperFormView extends LinearLayout {
     /**
      * Adds a step to the form in the specified position.
      *
-     * @param index The index where the step will be added.
+     * @param index     The index where the step will be added.
      * @param stepToAdd The step to add.
      * @return True if the step was added successfully; false otherwise.
      */
@@ -996,6 +1005,10 @@ public class VerticalStepperFormView extends LinearLayout {
         previousStepButton.setOnClickListener(view -> goToPreviousStep(true));
         nextStepButton.setOnClickListener(view -> goToNextStep(true));
 
+        stepsScrollView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+
+        });
+
         addObserverForKeyboard();
     }
 
@@ -1080,7 +1093,7 @@ public class VerticalStepperFormView extends LinearLayout {
             boolean[] completedSteps = bundle.getBooleanArray("completedSteps");
             boolean[] errorSteps = bundle.getBooleanArray("errorSteps");
             int positionToOpen = bundle.getInt("openStep");
-            Serializable[] stepsData = (Serializable[])bundle.getSerializable("stepsData");
+            Serializable[] stepsData = (Serializable[]) bundle.getSerializable("stepsData");
             state = bundle.getParcelable("superState");
 
             restoreFromState(

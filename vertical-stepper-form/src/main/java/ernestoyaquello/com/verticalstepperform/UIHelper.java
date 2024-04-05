@@ -3,16 +3,14 @@ package ernestoyaquello.com.verticalstepperform;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.res.ColorStateList;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.view.ViewCompat;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.core.view.ViewCompat;
 
 class UIHelper {
 
@@ -98,10 +96,10 @@ class UIHelper {
             return;
         }
 
-        float density = view.getContext().getResources().getDisplayMetrics().density;
-        long durationMillis = ((int) (expandedHeight * (Math.abs(finalValue - correctedInitialValue)) / density)) * 2;
-        durationMillis = durationMillis < MIN_DURATION_MILLIS ? MIN_DURATION_MILLIS : durationMillis;
-
+//        float density = view.getContext().getResources().getDisplayMetrics().density;
+//        long durationMillis = ((int) (expandedHeight * (Math.abs(finalValue - correctedInitialValue)) / density)) * 2;
+//        durationMillis = durationMillis < MIN_DURATION_MILLIS ? MIN_DURATION_MILLIS : durationMillis;
+        long durationMillis = MIN_DURATION_MILLIS;
         final ObjectAnimator animator = ObjectAnimator.ofFloat(view, View.ALPHA, correctedInitialValue, finalValue);
         animator.setDuration(durationMillis);
 
